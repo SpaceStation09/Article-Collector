@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Article Collector
 
-## Getting Started
+Private article collection app built with Next.js, Prisma, PostgreSQL, and passkey authentication.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Save article links with tags
+- Fetch article titles from `og:title`, `twitter:title`, or `<title>`
+- Fallback to manual title entry when fetching fails
+- Search by title keyword
+- Filter by tag
+- Restrict access to the passkeys you register during setup
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Next.js App Router
+- Tailwind CSS
+- Prisma ORM
+- PostgreSQL via Supabase
+- Passkey auth with `@simplewebauthn`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup
 
-## Learn More
+1. Copy `.env.example` to `.env` and fill in the values.
+2. Run `npm install`.
+3. Generate the Prisma client with `npm run db:generate`.
+4. Apply your schema with `npm run db:migrate`.
+5. Start the app with `npm run dev`.
 
-To learn more about Next.js, take a look at the following resources:
+## Passkey setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Set `BOOTSTRAP_TOKEN` in `.env`
+- Visit `/setup` the first time the app runs
+- Enter that token and register your first passkey
+- After setup completes, login happens at `/login`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+When you deploy, set `APP_ORIGIN` to the full public origin. If needed, set `RP_ID` to the public hostname.
 
-## Deploy on Vercel
+## Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `BOOTSTRAP_TOKEN` should be treated like a secret and rotated after first setup.
+- Deploy on any HTTPS host and use PostgreSQL for production.
