@@ -14,7 +14,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Article Collector",
-  description: "Private article collection with Google login and tag filters.",
+  description: "Private article collection with passkey login, tags, and search.",
+  applicationName: "Article Collector",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Article Collector",
+  },
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({
