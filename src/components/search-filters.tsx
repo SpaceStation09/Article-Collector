@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, startTransition, useState } from "react";
 
 function languageButtonClass(isActive: boolean) {
   return isActive
@@ -20,14 +21,54 @@ export function SearchFilters({
   language: "ZH" | "EN" | "";
   tags: { id: string; name: string }[];
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(q);
+  const [selectedTag, setSelectedTag] = useState(tag);
   const [selectedLanguage, setSelectedLanguage] = useState<"ZH" | "EN" | "">(language);
 
   function toggleLanguage(nextLanguage: "ZH" | "EN") {
     setSelectedLanguage((currentLanguage) => (currentLanguage === nextLanguage ? "" : nextLanguage));
   }
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const params = new URLSearchParams();
+    params.set("tab", "browse");
+
+    const normalizedQuery = query.trim();
+    if (normalizedQuery) {
+      params.set("q", normalizedQuery);
+    }
+
+    if (selectedTag) {
+      params.set("tag", selectedTag);
+    }
+
+    if (selectedLanguage) {
+      params.set("language", selectedLanguage);
+    }
+
+    const nextQuery = params.toString();
+    const currentQuery = new URLSearchParams(searchParams.toString());
+    currentQuery.delete("page");
+    if (!currentQuery.get("tab")) {
+      currentQuery.set("tab", "browse");
+    }
+
+    if (currentQuery.toString() === nextQuery) {
+      return;
+    }
+
+    startTransition(() => {
+      router.push(nextQuery ? `${pathname}?${nextQuery}` : pathname);
+    });
+  }
+
   return (
-    <form className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
+    <form onSubmit={handleSubmit} className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
       <div className="space-y-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">Find articles</p>
@@ -37,8 +78,8 @@ export function SearchFilters({
         <label className="flex flex-col gap-2 text-sm font-medium">
           Search title
           <input
-            name="q"
-            defaultValue={q}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
             placeholder="Search by keyword"
             className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 outline-none transition focus:border-[var(--accent)]"
           />
@@ -47,8 +88,8 @@ export function SearchFilters({
         <label className="flex flex-col gap-2 text-sm font-medium">
           Tag
           <select
-            name="tag"
-            defaultValue={tag}
+            value={selectedTag}
+            onChange={(event) => setSelectedTag(event.target.value)}
             className="rounded-2xl border border-[var(--border)] bg-white px-4 py-3 outline-none transition focus:border-[var(--accent)]"
           >
             <option value="">All tags</option>
