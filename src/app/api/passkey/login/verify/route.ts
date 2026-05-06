@@ -1,10 +1,11 @@
 import { verifyAuthenticationResponse, type AuthenticatorTransportFuture } from "@simplewebauthn/server";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { applySession, clearChallenge, readChallenge } from "@/lib/session";
 import { getAppOrigin, getRpId } from "@/lib/webauthn";
 
 export async function POST(request: Request) {
+  const prisma = getPrisma();
   try {
     const challenge = await readChallenge("authentication");
     if (!challenge?.challenge) {

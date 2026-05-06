@@ -36,7 +36,39 @@ Private article collection app built with Next.js, Prisma, PostgreSQL, and passk
 
 When you deploy, set `APP_ORIGIN` to the full public origin. If needed, set `RP_ID` to the public hostname.
 
+## Vercel
+
+This repository is set up for a standard Vercel deployment.
+
+### Environment variables
+
+- `DATABASE_URL`: runtime database URL. For Supabase, prefer the pooler URL.
+- `DIRECT_DATABASE_URL`: direct PostgreSQL URL for Prisma migrations.
+- `APP_ORIGIN`: full public origin, for example `https://your-domain.vercel.app`
+- `AUTH_SECRET`: long random secret used for session signing
+- `BOOTSTRAP_TOKEN`: one-time setup token for the first passkey registration
+- `RP_ID`: optional when it differs from the hostname in `APP_ORIGIN`
+- `RP_NAME`: optional passkey display name override
+
+### Deploy steps
+
+1. Push this repository to GitHub.
+2. Import the repository into Vercel.
+3. Set all required environment variables in the Vercel project settings.
+4. Deploy.
+5. Visit `/setup` and register your first passkey.
+6. After setup, sign in at `/login`.
+7. If you add a custom domain, update `APP_ORIGIN` and `RP_ID` to match it.
+
+### Supabase note
+
+- For Vercel runtime traffic, using the Supabase pooler URL for `DATABASE_URL` is the safer default.
+- Keep the direct `5432` connection string in `DIRECT_DATABASE_URL` for `prisma migrate`.
+- Treat both URLs as secrets and never commit them.
+
 ## Notes
 
 - `BOOTSTRAP_TOKEN` should be treated like a secret and rotated after first setup.
 - Deploy on any HTTPS host and use PostgreSQL for production.
+- Do not commit `.env`, `.dev.vars`, exported secrets, or database dumps.
+- If `.env` was ever committed before, rotate the database password and auth secrets before going live on the new platform.

@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { deleteUnusedTags } from "@/lib/tag-maintenance";
 import { normalizeTagName } from "@/lib/tags";
@@ -10,6 +10,8 @@ async function connectTags(tagNames: string[]) {
   if (tagNames.length === 0) {
     return [];
   }
+
+  const prisma = getPrisma();
 
   const tags = await Promise.all(
     tagNames.map((name) =>
@@ -25,6 +27,7 @@ async function connectTags(tagNames: string[]) {
 }
 
 export async function POST(request: Request) {
+  const prisma = getPrisma();
   const auth = await requireUser();
   if (auth.response) {
     return auth.response;

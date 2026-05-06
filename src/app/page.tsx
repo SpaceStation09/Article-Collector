@@ -6,10 +6,20 @@ import { HomeTabs } from "@/components/home-tabs";
 import { SearchFilters } from "@/components/search-filters";
 import { SignOutButton } from "@/components/sign-out-button";
 import type { ArticleListItem } from "@/lib/article-types";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
 type TabKey = "add" | "browse";
+
+type ArticleWithTags = Prisma.ArticleGetPayload<{
+  include: {
+    tags: {
+      include: {
+        tag: true;
+      };
+    };
+  };
+}>;
 
 type HomePageProps = {
   searchParams: Promise<{
@@ -21,7 +31,10 @@ type HomePageProps = {
   }>;
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage({ searchParams }: HomePageProps) {
+  const prisma = getPrisma();
   const [currentUser, existingUser] = await Promise.all([
     getCurrentUser(),
     prisma.user.findFirst({ select: { id: true } }),
@@ -71,7 +84,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         : {}),
     };
 
-    const [tagRecords, articles, articleCount] = await Promise.all([
+    const [tagRecords, rawArticles, articleCount] = await Promise.all([
       prisma.tag.findMany({ orderBy: { name: "asc" } }),
       prisma.article.findMany({
         where,
@@ -95,6 +108,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       }),
       prisma.article.count({ where }),
     ]);
+    const articles = rawArticles as unknown as ArticleWithTags[];
 
     tags = tagRecords.map((record) => ({
       id: record.id,

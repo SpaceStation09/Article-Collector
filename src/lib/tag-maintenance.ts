@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function deleteUnusedTags() {
-  await prisma.tag.deleteMany({
+  await getPrisma().tag.deleteMany({
     where: {
       articles: {
         none: {},

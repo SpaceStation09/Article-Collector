@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { createSetupSession } from "@/lib/session";
 
 function secureEquals(left: string, right: string) {
@@ -15,6 +15,7 @@ function secureEquals(left: string, right: string) {
 }
 
 export async function POST(request: Request) {
+  const prisma = getPrisma();
   const configuredToken = process.env.BOOTSTRAP_TOKEN;
 
   if (!configuredToken) {

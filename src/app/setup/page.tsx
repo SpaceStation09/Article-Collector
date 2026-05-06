@@ -1,9 +1,12 @@
 import { redirect } from "next/navigation";
 import { PasskeySetup } from "@/components/passkey-setup";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
+export const dynamic = "force-dynamic";
+
 export default async function SetupPage() {
+  const prisma = getPrisma();
   const [currentUser, existingUser] = await Promise.all([
     getCurrentUser(),
     prisma.user.findFirst({ select: { id: true } }),

@@ -1,10 +1,11 @@
 import { verifyRegistrationResponse } from "@simplewebauthn/server";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { applySession, clearChallenge, clearSetupSession, hasSetupSession, readChallenge } from "@/lib/session";
 import { getAppOrigin, getRpId } from "@/lib/webauthn";
 
 export async function POST(request: Request) {
+  const prisma = getPrisma();
   try {
     const existingUser = await prisma.user.findFirst({ select: { id: true } });
     if (existingUser) {

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { PasskeyLogin } from "@/components/passkey-login";
 import { getCurrentUser } from "@/lib/session";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -9,7 +9,10 @@ type LoginPageProps = {
   }>;
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const prisma = getPrisma();
   const [currentUser, existingUser] = await Promise.all([
     getCurrentUser(),
     prisma.user.findFirst({ select: { id: true } }),

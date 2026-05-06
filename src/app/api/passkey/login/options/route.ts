@@ -1,10 +1,11 @@
 import { generateAuthenticationOptions, type AuthenticatorTransportFuture } from "@simplewebauthn/server";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { createChallenge } from "@/lib/session";
 import { getRpId } from "@/lib/webauthn";
 
 export async function POST() {
+  const prisma = getPrisma();
   const user = await prisma.user.findFirst({
     include: { passkeys: true },
   });

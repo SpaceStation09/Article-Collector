@@ -1,10 +1,11 @@
 import { generateRegistrationOptions } from "@simplewebauthn/server";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { createChallenge, hasSetupSession } from "@/lib/session";
 import { getRpId, getRpName } from "@/lib/webauthn";
 
 export async function POST() {
+  const prisma = getPrisma();
   const existingUser = await prisma.user.findFirst({ select: { id: true } });
   if (existingUser) {
     return NextResponse.json({ error: "Setup has already been completed." }, { status: 409 });

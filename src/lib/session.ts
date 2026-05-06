@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { SignJWT, jwtVerify } from "jose";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 const SESSION_COOKIE = "article-collector-session";
 const CHALLENGE_COOKIE = "article-collector-challenge";
@@ -134,7 +134,7 @@ export async function getCurrentUser() {
     return null;
   }
 
-  return prisma.user.findUnique({
+  return getPrisma().user.findUnique({
     where: { id: payload.sub },
     include: { passkeys: { orderBy: { createdAt: "asc" } } },
   });
