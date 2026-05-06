@@ -1,11 +1,9 @@
 "use client";
 
 import { startAuthentication } from "@simplewebauthn/browser";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function PasskeyLogin() {
-  const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
@@ -38,8 +36,7 @@ export function PasskeyLogin() {
         throw new Error(verifyData.error ?? "Unable to verify passkey.");
       }
 
-      router.replace("/");
-      router.refresh();
+      window.location.assign("/");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to log in with passkey.");
     } finally {
